@@ -7,10 +7,14 @@
   <style>
     .btns {
       float: right;
+      margin-left: 20px;
     }
     
     
     li {
+      width: max-content;
+      word-wrap: break-word;
+      
       border: 1px dashed red;
     }
   </style>
@@ -20,10 +24,13 @@
     <input type="text">
     <button type="button" onClick="createListItem(this)" onKeyPress="onKeyPressReturn(this)">Submit</button>
   </form>
+  
+  
 
   <ul id="list"></ul>
   
   <script>
+    
     const createListItem = event => {
       const list = document.getElementById('list')
       const item = document.createElement('li')
