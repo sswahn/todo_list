@@ -50,7 +50,7 @@
       localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
     }
     
-    const removeStore = text => {
+    const updateStore = text => {
       const store = JSON.parse(localStorage.getItem('store'))
       const arr = store.filter(item => item !== text)
       localStorage.removeItem('store')
@@ -93,7 +93,7 @@
     const deleteItem = event => {
       if(confirm('Permenantly delete item?')) {
         const item = event.parentElement.parentElement
-        removeStore(item.firstChild.textContent)
+        updateStore(item.firstChild.textContent)
         document.getElementById('list').removeChild(item)
       }
     }
