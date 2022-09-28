@@ -54,7 +54,7 @@
       const store = JSON.parse(localStorage.getItem('store'))
       const arr = store.filter(item => item !== text)
       localStorage.removeItem('store')
-      localStorage.setItem('store', arr)
+      localStorage.setItem('store', JSON.stringify(arr))
     }
     
     const createButtons = () => {
