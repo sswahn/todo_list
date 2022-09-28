@@ -50,6 +50,13 @@
       localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
     }
     
+    const removeStore = text => {
+      const store = JSON.parse(localStorage.getItem('store'))
+      const arr = store.filter(item => item !== text)
+      localStorage.removeItem('store')
+      localStorage.setItem('store', arr)
+    }
+    
     const createButtons = () => {
       const div = document.createElement('div')
       const edit = document.createElement('button')
@@ -66,27 +73,7 @@
       return div
     }
     
-    const editItem = event => {
-      
-    }
-    
-    const deleteItem = event => {
-      if(confirm('Permenantly delete item?')) {
-        document.getElementById('list').removeChild(
-          event.parentElement.parentElement
-        )
-        // filter from localStorage
-      }
-    }
-    
-    const onKeyPressReturn = event => {
-      console.log('keycode: ', event.keyCode)
-      if (event.keyCode === 13) {
-        return createListItem(event)
-      }
-    }
-    
-    (() => { 
+    const loadContent = () => {
       const store = localStorage.getItem('store') 
       if (!store) return
       JSON.parse(store).forEach(value => {
@@ -97,8 +84,31 @@
         item.appendChild(btns)
         list.appendChild(item)
       })
-    })()
+    }
+    
+    const editItem = event => {
+      
+    }
+    
+    const deleteItem = event => {
+      if(confirm('Permenantly delete item?')) {
+        const item = event.parentElement.parentElement
+        removeStore(item.firstChild.textContent)
+        document.getElementById('list').removeChild(item)
+        loadContent
+      }
+    }
+    
+    const onKeyPressReturn = event => {
+      console.log('keycode: ', event.keyCode)
+      if (event.keyCode === 13) {
+        return createListItem(event)
+      }
+    }
+    
+    (() => loadContent())()
     
   </script>
 </body>
 </html>
+
