@@ -46,10 +46,8 @@
     }
     
     const setStore = value => {
-      const store = localStorage.getItem('store') 
-      return !store
-        ? localStorage.setItem('store', JSON.stringify([value]))
-        : localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
+      const store = localStorage.getItem('store') || '[]'
+      localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
     }
     
     const createButtons = () => {
