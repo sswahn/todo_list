@@ -6,28 +6,31 @@
   <title>Todo List</title>
   <style>
     .btns {
+      display: flex;
       float: right;
+      justify-content: space-between;
       margin-left: 20px;
+      width: 100px;
     }
     
+    ul {
+      max-width: 600px;
+    }
     
     li {
-      width: max-content;
       word-wrap: break-word;
-      
-      border: 1px dashed red;
+      width: 100%;
     }
   </style>
 </head>
 <body>
   <form>
-    <input type="text" onKeyPress="onKeyPressReturn(this)">
+    <input type="text">
     <button type="button" onClick="createListItem(this)">Submit</button>
   </form>
-  
-  
 
   <ul id="list"></ul>
+  
   
   <script>
     
@@ -39,6 +42,14 @@
       item.appendChild(document.createTextNode(value))
       item.appendChild(btns)
       list.appendChild(item)
+      setStore(value)
+    }
+    
+    const setStore = value => {
+      const store = localStorage.getItem('store') 
+      return !store
+        ? localStorage.setItem('store', JSON.stringify([value]))
+        : localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
     }
     
     const createButtons = () => {
@@ -48,22 +59,47 @@
       div.setAttribute('class', 'btns')
       edit.setAttribute('class', 'edit-btn')
       edit.setAttribute('onClick', 'editItem(this)')
+      edit.textContent = 'Edit'
       del.setAttribute('class', 'delete-btn')
       del.setAttribute('onClick', 'deleteItem(this)')
+      del.textContent = 'Delete'
       div.appendChild(edit)
       div.appendChild(del)
       return div
     }
     
-    const editItem = event => {}
-    const deleteItem = event => {}
+    const editItem = event => {
+      
+    }
+    
+    const deleteItem = event => {
+      if(confirm('Permenantly delete item?')) {
+        document.getElementById('list').removeChild(
+          event.parentElement.parentElement
+        )
+        // filter from localStorage
+      }
+    }
     
     const onKeyPressReturn = event => {
       console.log('keycode: ', event.keyCode)
-      if (event.keyCode === 13){
+      if (event.keyCode === 13) {
         return createListItem(event)
       }
     }
+    
+    (() => { 
+      const store = localStorage.getItem('store') 
+      if (!store) return
+      JSON.parse(store).forEach(value => {
+        const list = document.getElementById('list')
+        const item = document.createElement('li')
+        const btns = createButtons()
+        item.appendChild(document.createTextNode(value))
+        item.appendChild(btns)
+        list.appendChild(item)
+      })
+    })()
     
   </script>
 </body>
