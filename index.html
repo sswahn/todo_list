@@ -26,6 +26,15 @@
       word-wrap: break-all;
       width: 100%;
     }
+    
+    li input {
+      width: 395px;
+    }
+    
+    .update-btn {
+      margin-left: 50px;
+      width: 100px;
+    }
 
   </style>
 </head>
@@ -43,12 +52,11 @@
     const createListItem = event => {
       const list = document.getElementById('list')
       const item = document.createElement('li')
-      const value = event.parentElement.firstElementChild.value
+      const text = event.parentElement.firstElementChild.value
       const btns = createButtons()
-      item.appendChild(document.createTextNode(value))
-      item.appendChild(btns)
-      list.appendChild(item)
-      setStore(value)
+      item.append(text, btns)
+      list.append(item)
+      setStore(text)
     }
     
     const setStore = value => {
@@ -56,7 +64,15 @@
       localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
     }
     
-    const updateStore = text => {
+    const replaceInStore = (previous, current) => {
+      const store = JSON.parse(localStorage.getItem('store'))
+      const arr = store.reduce((acc, val) => 
+        val === previous ? [...acc, current] : [...acc, val], [])
+      localStorage.removeItem('store')
+      localStorage.setItem('store', JSON.stringify(arr))
+    }
+    
+    const removeFromStore = text => {
       const store = JSON.parse(localStorage.getItem('store'))
       const arr = store.filter(item => item !== text)
       localStorage.removeItem('store')
@@ -74,8 +90,7 @@
       del.setAttribute('class', 'delete-btn')
       del.setAttribute('onClick', 'deleteItem(this)')
       del.textContent = 'Delete'
-      div.appendChild(edit)
-      div.appendChild(del)
+      div.append(edit, del)
       return div
     }
     
@@ -86,20 +101,46 @@
         const list = document.getElementById('list')
         const item = document.createElement('li')
         const btns = createButtons()
-        item.appendChild(document.createTextNode(value))
-        item.appendChild(btns)
-        list.appendChild(item)
+        item.append(value, btns)
+        list.append(item)
       })
     }
     
     const editItem = event => {
-      
+      const item = event.parentElement.parentElement
+      const node = item.firstChild
+      const text = item.firstChild.textContent
+      const div = document.createElement('div')
+      const input = document.createElement('input')
+      const btn = document.createElement('button')
+      item.removeChild(node)
+      item.removeChild(item.firstChild)
+      input.setAttribute('type', 'text')
+      input.setAttribute('value', text)
+      btn.setAttribute('class', 'update-btn')
+      btn.setAttribute('onClick', 'submitEdit(this)')
+      btn.setAttribute('data-text', text)
+      btn.textContent = 'Update'
+      div.append(input, btn)
+      item.prepend(div)
+    }
+    
+    const submitEdit = event => {
+      const item = event.parentElement
+      const input = event.parentElement.firstChild
+      const text = event.parentElement.firstChild.value
+      const prev = event.getAttribute('data-text')
+      item.removeChild(input)
+      item.removeChild(item.lastChild)
+      const btns = createButtons()
+      item.append(text, btns)
+      replaceInStore(prev, text)
     }
     
     const deleteItem = event => {
       if(confirm('Permenantly delete item?')) {
         const item = event.parentElement.parentElement
-        updateStore(item.firstChild.textContent)
+        removeFromStore(item.firstChild.textContent)
         document.getElementById('list').removeChild(item)
       }
     }
