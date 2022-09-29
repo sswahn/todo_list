@@ -74,6 +74,8 @@
     
     const removeFromStore = text => {
       const store = JSON.parse(localStorage.getItem('store'))
+      // this is broken when two items are the same
+      // need ui not text
       const arr = store.filter(item => item !== text)
       localStorage.removeItem('store')
       localStorage.setItem('store', JSON.stringify(arr))
