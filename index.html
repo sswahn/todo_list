@@ -10,27 +10,33 @@
       float: right;
       justify-content: space-between;
       margin-left: 20px;
-      width: 100px;
+      min-width: 100px;
     }
     
     ul {
       max-width: 600px;
+      padding: 0;
     }
     
     li {
-      word-wrap: break-word;
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      word-wrap: break-all;
       width: 100%;
     }
+
   </style>
 </head>
 <body>
+  
   <form>
-    <input type="text">
+    <input type="text" onKeyPress="onKeyPressReturn(this)">
     <button type="button" onClick="createListItem(this)">Submit</button>
   </form>
 
   <ul id="list"></ul>
-  
   
   <script>
     
@@ -99,9 +105,8 @@
     }
     
     const onKeyPressReturn = event => {
-      console.log('keycode: ', event.keyCode)
-      if (event.keyCode === 13) {
-        return createListItem(event)
+      if (window.event.keyCode === 13) {
+        createListItem(event)
       }
     }
     
