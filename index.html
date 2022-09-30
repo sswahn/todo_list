@@ -54,29 +54,33 @@
       const item = document.createElement('li')
       const text = event.parentElement.firstElementChild.value
       const btns = createButtons()
+      item.setAttribute('id', Math.random())
       item.append(text, btns)
       list.append(item)
-      setStore(text)
+      setStore(item.id, text)
     }
     
-    const setStore = value => {
+    const setStore = (id, text) => {
       const store = localStorage.getItem('store') || '[]'
-      localStorage.setItem('store', JSON.stringify([...JSON.parse(store), value]))
+      localStorage.setItem(
+        'store', 
+        JSON.stringify([...JSON.parse(store), { id, text }])
+      )
     }
     
-    const replaceInStore = (previous, current) => {
+    const updateStore = (id, text) => {
+      console.log('id', id)
       const store = JSON.parse(localStorage.getItem('store'))
-      const arr = store.reduce((acc, val) => 
-        val === previous ? [...acc, current] : [...acc, val], [])
+      // bugged:
+      const arr = store.reduce((acc, val) =>
+        val.id === id ? [...acc, { id, text }] : [...acc, val], [])
       localStorage.removeItem('store')
       localStorage.setItem('store', JSON.stringify(arr))
     }
     
-    const removeFromStore = text => {
+    const removeFromStore = id => {
       const store = JSON.parse(localStorage.getItem('store'))
-      // this is broken when two items are the same
-      // need ui not text
-      const arr = store.filter(item => item !== text)
+      const arr = store.filter(item => item.id !== id)
       localStorage.removeItem('store')
       localStorage.setItem('store', JSON.stringify(arr))
     }
@@ -99,11 +103,11 @@
     const loadContent = () => {
       const store = localStorage.getItem('store') 
       if (!store) return
-      JSON.parse(store).forEach(value => {
+      JSON.parse(store).forEach(obj => {
         const list = document.getElementById('list')
         const item = document.createElement('li')
         const btns = createButtons()
-        item.append(value, btns)
+        item.append(obj.text, btns)
         list.append(item)
       })
     }
@@ -127,22 +131,25 @@
       item.prepend(div)
     }
     
+    
     const submitEdit = event => {
       const item = event.parentElement
       const input = event.parentElement.firstChild
       const text = event.parentElement.firstChild.value
       const prev = event.getAttribute('data-text')
+      const btns = createButtons()
       item.removeChild(input)
       item.removeChild(item.lastChild)
-      const btns = createButtons()
       item.append(text, btns)
-      replaceInStore(prev, text)
+      console.log('passed id: ', item.parentElement.id)
+      console.log('passed text: ', text)
+      updateStore(item.parentElement.id, text)
     }
     
     const deleteItem = event => {
       if(confirm('Permenantly delete item?')) {
         const item = event.parentElement.parentElement
-        removeFromStore(item.firstChild.textContent)
+        removeFromStore(item.id)
         document.getElementById('list').removeChild(item)
       }
     }
